@@ -17,7 +17,7 @@ def photo(message):
     downloaded_file = bot.download_file(file_info.file_path)
 
     with open("image.jpg", 'wb') as new_file:
-        new_file.write(downloaded_file)
+        new_file.write(downloaded_file) # TODO make tmp
     print(x := ('\n'.join(str(i) for i in checker.process_cheque('image.jpg'))))
     bot.reply_to(message, x)
 
