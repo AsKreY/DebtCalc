@@ -60,8 +60,28 @@ def obtain_debt(message):
             bot.reply_to(message, text="Wrong names")
 
 
+@bot.message_handler(commands=['close_debt']) # TODO add hints for commands
+def obtain_debt(message):
+    debter, owner = message.text.split(' ')[1:]
+    if message.from_user.username != owner:
+        bot.reply_to(message, "Forbidden")
+        return
+    with open(JSON_PATH, "r") as file:
+        json_data = json.load(file)
+        if owner not in json_data.keys() or debter not in json_data[owner].keys():
+            bot.reply_to(message, text="Wrong names")
+
+    json_data[debter][owner] = 0
+    json_data[owner][debter] = 0
+
+    with open(JSON_PATH, "w") as file:
+        json.dump(json_data, file)
+
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
+    global current_users
     if call.data:
         data = literal_eval(call.data)
 
@@ -79,6 +99,8 @@ def callback_inline(call):
             keyboard.add(button)
             bot.send_message(chat_id=call.message.chat.id, text="Выберите людей", reply_markup=keyboard)
         elif data['type'] == 'done_signal':
+            if len(current_users) == 0:
+                current_users = USERS
             debt_per_one = data['data'] / len(USERS) if len(current_users) == 0 else data['data'] / len(current_users)
             with open(JSON_PATH, "r") as file:
                 json_data = json.load(file)
