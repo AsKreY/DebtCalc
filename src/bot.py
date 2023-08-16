@@ -19,6 +19,7 @@ checker = ChequeChecker(CHEQUE_TOKEN)
 
 @bot.message_handler(content_types=['photo'])
 def photo(message):
+    print("photot")
     file_id = message.photo[-1].file_id
     file_info = bot.get_file(file_id)
     downloaded_file = bot.download_file(file_info.file_path)
